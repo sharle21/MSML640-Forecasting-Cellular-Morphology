@@ -13,7 +13,6 @@ WORKERS = 4
 
 def download_row(row):
     # Setup unsigned client per-process
-    # Boto3 handles retries internally, no need for a manual loop
     cfg = Config(signature_version=UNSIGNED, connect_timeout=15, retries={'max_attempts': 3})
     s3 = boto3.client('s3', config=cfg)
     
@@ -24,9 +23,8 @@ def download_row(row):
     for col in ['image_paths_2W', 'image_paths_4W']:
         if pd.isna(row.get(col)): continue
         try:
-            # properly parse the stringified list "[...]"
             items = ast.literal_eval(row[col])
-            urls.extend(items[:6]) # Take first 6
+            urls.extend(items[:6]) # Take first 6 for parsing
         except:
             continue
 
@@ -41,7 +39,7 @@ def download_row(row):
         parts = url.replace("s3://", "").split('/')
         bucket, key = parts[0], "/".join(parts[1:])
         
-        # Handle the plate/images folder weirdness
+        # Handling the plate/images
         plate = parts[-3] if parts[-2] == 'Images' else parts[-2]
         local_path = os.path.join(SCRATCH_BASE, batch, plate, parts[-1])
 
@@ -54,7 +52,7 @@ def download_row(row):
             s3.download_file(bucket, key, local_path)
             downloaded += 1
         except Exception:
-            # If it fails after boto3 retries, just move on.
+           
             pass
 
     return downloaded
@@ -69,5 +67,5 @@ if __name__ == "__main__":
     rows = df.to_dict('records')
 
     with ProcessPoolExecutor(max_workers=WORKERS) as pool:
-        # chunksize helps when tasks are small
+        # chunksize for tasksas they are small
         list(tqdm(pool.map(download_row, rows, chunksize=5), total=len(rows)))
