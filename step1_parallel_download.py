@@ -5,9 +5,8 @@ import sys
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 
-# Project configs
+
 CSV_FILE = 'paired_dataset_weeks.csv'
-# scratch path for msml640
 OUT_DIR = '/scratch/zt1/project/msml640/user/sharle/data/images' 
 WORKERS = 16 
 
@@ -23,12 +22,11 @@ def get_local_path(s3_url):
     else: return None
 
     parts = s3_url.split('/')
-    # If the parent folder is 'Images', go up one more level for the plate name
     plate = parts[-3] if parts[-2] == 'Images' else parts[-2]
     return os.path.join(OUT_DIR, batch, plate, parts[-1])
 
 def download_row(row):
-    # Columns are stringified lists "['s3://...', ...]", clean them up
+    #cleaning the names of the images for better reading
     cols = ['image_paths_2W', 'image_paths_4W']
     urls = []
     
@@ -47,14 +45,14 @@ def download_row(row):
 
         if not os.path.exists(dest):
             os.makedirs(os.path.dirname(dest), exist_ok=True)
-            # using aws cli is faster than boto3 for simple cp
+            # using aws cli as it is faster than boto3 for simple cp
             cmd = f"aws s3 cp {url} {dest} --no-sign-request"
             subprocess.run(cmd.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == '__main__':
     print(f"Downloading {len(df)} rows to {OUT_DIR} with {WORKERS} threads...")
     
-    # iterrows is slow but fine for just 16 threads
+    # iterrows for 16 threads
     rows = [r for _, r in df.iterrows()]
     
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
