@@ -10,7 +10,7 @@ from torchvision import transforms
 from timm.models import create_model
 from scipy.ndimage import gaussian_filter
 from skimage.transform import resize
-from train_trajectory import TrajectoryPredictor
+from src.train_trajectory import TrajectoryPredictor
 
 # CONFIG 
 CSV_FILE = 'paired_dataset.csv'

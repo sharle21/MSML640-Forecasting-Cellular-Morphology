@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from sklearn.decomposition import PCA
 from torch.utils.data import DataLoader, random_split
-from train_trajectory_multistep import MultiStepTrajectoryDataset,MultiStepPredictor,DATA_FILE
+from src.train_trajectory_multistep import MultiStepTrajectoryDataset,MultiStepPredictor,DATA_FILE
 
 # Configuration
 Model_path = Path("trajectory_model_multistep.pth")

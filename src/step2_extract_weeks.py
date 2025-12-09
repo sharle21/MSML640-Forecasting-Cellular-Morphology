@@ -9,7 +9,7 @@ from timm.models import create_model
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 
-# --- CONFIG ---
+
 CSV_FILE = 'paired_dataset_weeks.csv'
 OUT_FILE = 'openphenom_embeddings_weeks.pt'
 DATA_DIR = '/scratch/zt1/project/msml640/user/sharle/data/images'
@@ -111,7 +111,7 @@ class WeekDataset(Dataset):
 if __name__ == "__main__":
     assert os.path.exists(CSV_FILE), f"Missing CSV: {CSV_FILE}"
     
-    # Resume logic
+    # Resume logic because losing gpu from mid is UGHly
     results = []
     done_ids = set()
     if os.path.exists(OUT_FILE):

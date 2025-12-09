@@ -33,7 +33,7 @@ class PairedCellDataset(Dataset):
 
     def _get_local_path(self, s3_url):
         if not s3_url: return None
-        # Quick map for batch folders
+        #map for batch folders
         if '2020_11_18' in s3_url: batch = '24h_day1'
         elif '2020_11_19' in s3_url: batch = '72h_day4'
         else: return None
@@ -43,14 +43,14 @@ class PairedCellDataset(Dataset):
         return os.path.join(self.root, batch, plate, parts[-1])
 
     def _load_stack(self, url_list_str):
-        # fast parse "['s3://...', ...]"
+        #fast parse "['s3://...', ...]"
         try:
             urls = ast.literal_eval(str(url_list_str))
         except:
             urls = []
             
         stack = []
-        # Expecting 6 channels (indices 0-5)
+        #Expecting 6 channels 
         for i in range(6):
             path = self._get_local_path(urls[i]) if i < len(urls) else None
             
@@ -93,15 +93,16 @@ def get_model():
     # Interpolate Pos Embeds (224 -> 256)
     if 'pos_embed' in new_sd:
         pe = new_sd['pos_embed']
-	print(pe.shape[1])
-	print(m.pos_embed.shape[1])
+        
+
         if pe.shape[1] != m.pos_embed.shape[1]:
-            # (1, 197, 384) -> separate cls token -> grid -> resize -> flatten -> recombine
+            # (1, 197, 384) -> we hv cls token we 
             cls_token = pe[:, :1]
             grid = pe[:, 1:].transpose(1, 2)
             # 14x14 grid to 16x16 grid
             grid = torch.nn.functional.interpolate(grid, size=256, mode='linear') #fltetn
             new_sd['pos_embed'] = torch.cat((cls_token, grid.transpose(1, 2)), dim=1)
+            print(pe.shape[1])
 
     m.load_state_dict(new_sd, strict=False)
     return m.to(device).eval()
@@ -120,11 +121,11 @@ if __name__ == '__main__':
             imgs24 = imgs24.to(device)
             imgs72 = imgs72.to(device)
             
-            # Batch inference
+            # Batch inferee
             emb24 = model(imgs24)
             emb72 = model(imgs72)
             
-            # Move back to CPU to save RAM
+    
             emb24 = emb24.cpu()
             emb72 = emb72.cpu()
             

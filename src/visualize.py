@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from sklearn.decomposition import PCA
 from torch.utils.data import DataLoader, random_split
-from train_trajectory import CellTrajectoryDataset, TrajectoryPredictor, DATA_FILE
+from src.train_trajectory import CellTrajectoryDataset, TrajectoryPredictor, DATA_FILE
 
 Batch_size = 64
 Hidden_Dimensions = 1024  
@@ -43,7 +43,7 @@ def collect_predictions(model, val_loader):
 
     return actual_72h, predicted_72h
 
-#this runs PCA on the actual data and projects both actual and predicted data into 2D
+# PCA on the actual data and projects both actual and predicted data into 2D
 def run_pca(actual_72h, predicted_72h):
     pca = PCA(n_components=2)
     pca.fit(actual_72h)
@@ -52,7 +52,7 @@ def run_pca(actual_72h, predicted_72h):
 
     return actual_2d, pred_2d
 
-#this plots the PCA results
+#tplot the PCA results
 def plot_pca(actual_2d, pred_2d, max_pairs=100):
     plt.figure(figsize=(10, 8))
     plt.scatter(actual_2d[:, 0], actual_2d[:, 1],c="blue", alpha=0.5,s=10, label="Actual 72h")
