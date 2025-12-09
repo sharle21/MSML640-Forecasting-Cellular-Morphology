@@ -54,11 +54,10 @@ def main():
     print(f"simulating effect of: {target_drug}")
 
     #generate counterfactuals
-    #add target vector to ALL baseline cells
+    #adding target vector to ALL baseline cells
     e_counterfactual = e24 + target_vec
 
     #pca projection
-    #fit on everything so space is consistent
     combined = np.vstack([e24, e4w, e_counterfactual])
     pca = PCA(n_components=2)
     proj = pca.fit_transform(combined)
@@ -69,25 +68,22 @@ def main():
     p_real = proj[n:2*n]
     p_cf = proj[2*n:]
 
-    #plotting
     plt.figure(figsize=(8,8))
     
-    #mask for cells that actually took the drug
+    #masking for cells that actually took the drug
     is_target = np.array(pids) == target_drug
 
-    #plot 1: background noise (baseline)
+    #plot background noise (baseline)
     plt.scatter(p_base[:,0], p_base[:,1], c='gray', s=5, alpha=0.2, label='baseline')
 
-    #plot 2: real outcome of target drug
+    #plot real outcome of target drug
     plt.scatter(p_real[is_target,0], p_real[is_target,1], c='blue', s=30, label=f'true {target_drug}')
 
-    #plot 3: simulation (what if everyone took it?)
-    #only plot a subset to avoid crashing matplotlib
+    #plot simulation (what if everyone took it?)
     subset = np.random.choice(np.where(~is_target)[0], 500, replace=False)
     plt.scatter(p_cf[subset,0], p_cf[subset,1], c='red', s=5, alpha=0.3, label='simulated')
 
-    #draw vectors for a few samples
-    #show how baseline points move to simulated points
+    #showing how baseline points move to simulated points
     for i in subset[:15]:
         plt.arrow(p_base[i,0], p_base[i,1], 
                   p_cf[i,0]-p_base[i,0], p_cf[i,1]-p_base[i,1],
@@ -99,11 +95,10 @@ def main():
     print(f"saved {out_file}")
 
     #sanity check
-    #does simulation match reality for the drug group?
     sim_t = e_counterfactual[is_target]
     real_t = e4w[is_target]
     
-    #calc similarity
+    #calculating similarity
     cos = cosine_similarity(sim_t, real_t)
     print(f"mean cosine similarity on target group: {np.diag(cos).mean():.4f}")
 
