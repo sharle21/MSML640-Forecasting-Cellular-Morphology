@@ -1,7 +1,6 @@
 # MSML640-Forecasting-Cellular-Morphology
 Forecasting Cellular Morphological Trajectories via Latent Dynamics
 
-Group 6 | MSML 640 Final Project
 
 This repository contains the complete implementation of a computer vision pipeline designed to forecast the long-term phenotypic trajectory (4 weeks) of cell populations based on early-stage (24h) microscopy images.
 
